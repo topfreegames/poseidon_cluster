@@ -86,6 +86,7 @@ class Poseidon::ConsumerGroup
   # @param [Hash] options Consumer options
   # @option options [Integer] :max_bytes Maximum number of bytes to fetch. Default: 1048576 (1MB)
   # @option options [Integer] :max_wait_ms How long to block until the server sends us data. Default: 100 (100ms)
+  # @option options [Integer] :socket_timeout_ms Timeout to assume the connection is broken. Default: 3000 (3000ms)
   # @option options [Integer] :min_bytes Smallest amount of data the server should send us. Default: 0 (Send us data as soon as it is ready)
   # @option options [Integer] :claim_timeout Maximum number of seconds to wait for a partition claim. Default: 10
   # @option options [Integer] :loop_delay Number of seconds to delay the next fetch (in #fetch_loop) if nothing was returned. Default: 1
@@ -99,7 +100,7 @@ class Poseidon::ConsumerGroup
     @zk         = ::ZK.new(zookeepers.join(","))
     @options    = options
     @consumers  = []
-    @pool       = ::Poseidon::BrokerPool.new(id, brokers)
+    @pool       = ::Poseidon::BrokerPool.new(id, brokers, options[:socket_timeout_ms] || 3000)
     @mutex      = Mutex.new
     @registered = false
 
