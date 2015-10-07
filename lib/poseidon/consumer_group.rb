@@ -94,10 +94,11 @@ class Poseidon::ConsumerGroup
   # @option options [Boolean] :trail Starts reading messages from the latest partitions offsets and skips 'old' messages . Default: false
   #
   # @api public
-  def initialize(name, brokers, zookeepers, topic, options = {})
+  def initialize(name, brokers, zookeepers, zkRoot, topic, options = {})
     @name       = name
     @topic      = topic
     @zk         = ::ZK.new(zookeepers.join(","))
+    @zkRoot     = zkRoot
     @options    = options
     @consumers  = []
     @pool       = ::Poseidon::BrokerPool.new(id, brokers, options[:socket_timeout_ms] || 3000)
@@ -115,9 +116,9 @@ class Poseidon::ConsumerGroup
   # @return [Hash<Symbol,String>] registry paths
   def registries
     @registries ||= {
-      consumer: "/consumers/#{name}/ids",
-      owner:    "/consumers/#{name}/owners/#{topic}",
-      offset:   "/consumers/#{name}/offsets/#{topic}",
+      consumer: "/#{zkRoot}/#{name}/ids",
+      owner:    "/#{zkRoot}/#{name}/owners/#{topic}",
+      offset:   "/#{zkRoot}/#{name}/offsets/#{topic}",
     }
   end
 
