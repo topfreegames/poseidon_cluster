@@ -65,6 +65,8 @@ class Poseidon::ConsumerGroup
   # @attr_reader [String] name Group name
   attr_reader :name
 
+  attr_reader :zkRoot
+
   # @attr_reader [String] topic Topic name
   attr_reader :topic
 
